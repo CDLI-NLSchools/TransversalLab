@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transversal Lab: Math 2201 Unit 8</title>
+<style>
+  :root{
+    --ink:#1c2430; --muted:#5a6572; --accent:#0b5cad; --accent-dark:#084a8a;
+    --ok:#177245; --bad:#b3261e; --card:#ffffff; --bg:#eef2f6; --line:#d4dce4;
+    --soft:#f4f8fc; --warn:#8a5a00;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.45;}
+  .wrap{max-width:779px;margin:0 auto;padding:16px 14px 48px;}
+  header{margin:10px 0 14px;}
+  h1{font-size:1.7rem;margin:0 0 2px;}
+  h2{font-size:1.3rem;margin:0 0 6px;}
+  h3{font-size:1.08rem;margin:14px 0 6px;}
+  .subtitle{color:var(--muted);font-size:1rem;margin:0 0 8px;}
+  .instruction{font-size:1.02rem;margin:0;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(20,40,60,.06);}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+  button{font:inherit;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:#fff;
+    padding:9px 16px;border-radius:8px;min-height:44px;font-weight:600;}
+  button:hover{background:var(--accent-dark);}
+  button.secondary{background:#fff;color:var(--accent);}
+  button.secondary:hover{background:var(--soft);}
+  button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent);}
+  button.secondary[aria-pressed="true"]{background:var(--accent);color:#fff;}
+  button:disabled{opacity:.55;cursor:default;}
+  button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:3px solid #f2b01e;outline-offset:2px;}
+  .modebtns{display:flex;flex-wrap:wrap;gap:8px;}
+  .field{display:flex;flex-direction:column;gap:3px;margin:10px 0 0;}
+  .field label{font-size:.88rem;color:var(--muted);font-weight:600;}
+  .field input[type=text],.field input[type=number]{padding:9px 10px;font:inherit;font-size:1.02rem;border:1px solid var(--line);
+    border-radius:8px;min-height:44px;width:100%;background:#fff;}
+  select{padding:9px 10px;font:inherit;border:1px solid var(--line);border-radius:8px;min-height:44px;background:#fff;}
+  textarea{padding:9px 10px;font:inherit;border:1px solid var(--line);border-radius:8px;width:100%;min-height:84px;background:#fff;}
+  input[type=range]{width:100%;min-height:32px;}
+  .pickrow{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 0;}
+  .pickopt{border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;gap:8px;align-items:center;background:#fff;font-weight:600;}
+  .pickopt input{width:20px;height:20px;}
+  .checkrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0 0;}
+  .feedback{margin:12px 0 0;border-radius:10px;padding:12px 14px;display:none;}
+  .feedback.show{display:block;}
+  .feedback.ok{background:#f2faf5;border:1px solid var(--ok);}
+  .feedback.bad{background:#fdf3f2;border:1px solid var(--bad);}
+  .feedback.info{background:var(--soft);border:1px solid var(--line);}
+  .feedback p{margin:4px 0;}
+  .feedback .sumline{font-weight:700;}
+  .feedback.ok .sumline{color:var(--ok);}
+  .feedback.bad .sumline{color:var(--bad);}
+  table.plan{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0;}
+  table.plan th,table.plan td{border:1px solid var(--line);padding:5px 8px;text-align:left;}
+  table.plan th{background:var(--soft);}
+  .hidden{display:none !important;}
+  .reqbox{border:1px solid var(--line);background:var(--soft);border-radius:10px;padding:12px 14px;margin:12px 0;}
+  .reqbox p{margin:4px 0;}
+  .bigprompt{font-size:1.1rem;font-weight:600;}
+  .note{color:var(--muted);font-size:.94rem;}
+  .diagram{display:flex;justify-content:center;margin:8px 0;}
+  .diagram svg{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:10px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:680px){ h1{font-size:1.4rem;} .grid2{grid-template-columns:1fr;} }
+  #decisionSheet{background:#fff;}
+  #decisionSheet table{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0;}
+  #decisionSheet th,#decisionSheet td{border:1px solid var(--line);padding:5px 8px;text-align:left;}
+  #decisionSheet th{background:var(--soft);}
+  @media print{
+    body{background:#fff;}
+    .wrap{max-width:none;padding:0;}
+    body *{visibility:hidden;}
+    #decisionSheet,#decisionSheet *{visibility:visible;}
+    #decisionSheet{position:absolute;left:0;top:0;width:100%;border:none;box-shadow:none;margin:0;padding:0;}
+    #decisionSheet textarea{border:1px solid #999;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Transversal Lab</h1>
+    <p class="subtitle">Math 2201, Unit 8: Properties of Angles and Triangles (Indicators 5.1, 5.2, 5.9)</p>
+    <p class="instruction">This is practice: explore two lines cut by a transversal, name angle pairs, compute measures with the reason attached, and judge whether lines must be parallel. Nothing is recorded and nothing leaves this page. One condition runs through everything here: the equalities and the supplementary pairs belong to parallel lines. The moment the lines stop being parallel, the properties stop applying.</p>
+  </header>
+
+  <div class="card controls no-print" role="group" aria-label="Choose a mode">
+    <div class="modebtns">
+      <button type="button" id="modeExplore" aria-pressed="true">1. Explore</button>
+      <button type="button" id="modeName" class="secondary" aria-pressed="false">2. Name the Pair</button>
+      <button type="button" id="modeCompute" class="secondary" aria-pressed="false">3. Compute with a Reason</button>
+      <button type="button" id="modeVerdict" class="secondary" aria-pressed="false">4. Parallel or Not?</button>
+    </div>
+  </div>
+
+  <main>
+    <!-- Mode 1: Explore -->
+    <section class="card" id="panelExplore" aria-labelledby="eHeading">
+      <h2 id="eHeading">Explore: measure cases, then break it</h2>
+      <p>Drag the top of the transversal to change its slant, and drag the right end of line b to tilt it. The eight angle measures update as you move. With the parallel lock on, line b cannot tilt: measure cases, look for pairs that stay equal and pairs that stay supplementary, and record cases below. Then turn the lock off and break it: tilt line b out of parallel and watch which relationships stop holding. That failure is the evidence for indicator 5.2.</p>
+      <div class="checkrow">
+        <label class="pickopt"><input type="checkbox" id="eLock" checked> Parallel lock (line b stays parallel to line a)</label>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label for="eTv">Transversal slant (degrees from horizontal, at line a): <span id="eTvVal"></span></label>
+          <input type="range" id="eTv" min="52" max="128" step="1" value="72">
+        </div>
+        <div class="field">
+          <label for="eTilt">Tilt of line b (degrees, 0 means parallel): <span id="eTiltVal"></span></label>
+          <input type="range" id="eTilt" min="-24" max="24" step="1" value="0">
+        </div>
+      </div>
+      <div class="diagram" id="eDiagram"></div>
+      <h3>The eight measures right now</h3>
+      <div id="eTable"></div>
+      <h3>Compare a pair</h3>
+      <div class="grid2">
+        <div class="field">
+          <label for="ePick1">First angle</label>
+          <select id="ePick1"></select>
+        </div>
+        <div class="field">
+          <label for="ePick2">Second angle</label>
+          <select id="ePick2"></select>
+        </div>
+      </div>
+      <p class="workline" id="eCompare"></p>
+      <div class="checkrow">
+        <button type="button" id="eRecord">Record this case</button>
+      </div>
+      <div class="field">
+        <label for="eGeneral">My generalizations, in my own words (which pairs are equal, which are supplementary, and under what condition?)</label>
+        <textarea id="eGeneral" placeholder="Example: Corresponding angles are equal, but only while the lines are parallel. When I tilted line b, they stopped matching."></textarea>
+      </div>
+      <div class="field">
+        <label for="eBreak">Break it findings (with the lock off, which relationships stopped holding, and by how much?)</label>
+        <textarea id="eBreak" placeholder="Example: With line b tilted 10 degrees, the corresponding angles differed by 10 degrees instead of matching."></textarea>
+      </div>
+    </section>
+
+    <!-- Mode 2: Name the Pair -->
+    <section class="card hidden" id="panelName" aria-labelledby="nHeading">
+      <h2 id="nHeading">Name the Pair</h2>
+      <p>Two angles are highlighted, angle 1 and angle 2. Lines a and b are parallel. Name the relationship between the pair.</p>
+      <div class="diagram" id="nDiagram"></div>
+      <fieldset style="border:none;padding:0;margin:0;">
+        <legend style="font-weight:600;">Angle 1 and angle 2 are:</legend>
+        <div class="pickrow" id="nPicks" style="flex-direction:column;align-items:stretch;"></div>
+      </fieldset>
+      <div class="checkrow">
+        <button type="button" id="nCheck">Check</button>
+        <button type="button" id="nNew" class="secondary">New pair</button>
+      </div>
+      <div class="feedback" id="nFeedback" aria-live="polite"></div>
+    </section>
+
+    <!-- Mode 3: Compute with a Reason -->
+    <section class="card hidden" id="panelCompute" aria-labelledby="cHeading">
+      <h2 id="cHeading">Compute with a Reason</h2>
+      <p>Lines a and b are parallel. One angle measure is given. Find the marked angle, and choose the relationship that earns it. A measure with no correct reason does not count: the reason is the mathematics.</p>
+      <div class="diagram" id="cDiagram"></div>
+      <p class="bigprompt" id="cPrompt"></p>
+      <div class="field" style="max-width:260px;">
+        <label for="cValue">Measure of the marked angle (degrees)</label>
+        <input type="text" inputmode="decimal" id="cValue" autocomplete="off">
+      </div>
+      <fieldset style="border:none;padding:0;margin:12px 0 0;">
+        <legend style="font-weight:600;">The relationship that earns it:</legend>
+        <div class="pickrow" id="cPicks" style="flex-direction:column;align-items:stretch;"></div>
+      </fieldset>
+      <div class="checkrow">
+        <button type="button" id="cCheck">Check</button>
+        <button type="button" id="cNew" class="secondary">New problem</button>
+      </div>
+      <div class="feedback" id="cFeedback" aria-live="polite"></div>
+    </section>
+
+    <!-- Mode 4: Parallel or Not? -->
+    <section class="card hidden" id="panelVerdict" aria-labelledby="vHeading">
+      <h2 id="vHeading">Parallel or Not?</h2>
+      <p>Two angle measures are marked, one at each intersection. The diagram is drawn from the given measures. Decide what the measures prove about the lines, or find the flaw in a claim about them. This is the Section 1, Lesson 2 judgement: a relationship only certifies parallel lines when the measures actually satisfy it.</p>
+      <div class="diagram" id="vDiagram"></div>
+      <div class="reqbox"><p id="vPrompt"></p></div>
+      <fieldset style="border:none;padding:0;margin:0;" id="vFieldset">
+        <legend style="font-weight:600;" id="vLegend"></legend>
+        <div class="pickrow" id="vPicks" style="flex-direction:column;align-items:stretch;"></div>
+      </fieldset>
+      <fieldset style="border:none;padding:0;margin:12px 0 0;" id="vRelFieldset">
+        <legend style="font-weight:600;">The relationship that decides it:</legend>
+        <div class="pickrow" id="vRelPicks" style="flex-direction:column;align-items:stretch;"></div>
+      </fieldset>
+      <div class="checkrow">
+        <button type="button" id="vCheck">Check</button>
+        <button type="button" id="vNew" class="secondary">New problem</button>
+      </div>
+      <div class="feedback" id="vFeedback" aria-live="polite"></div>
+    </section>
+
+    <!-- Exploration Record -->
+    <section class="card" id="decisionSheet" aria-labelledby="dsHeading">
+      <h2 id="dsHeading">Exploration Record</h2>
+      <p class="note no-print">This sheet fills in from your work above: the cases you recorded in Explore mode, your generalizations in your own words, your break it findings, and the practice items you completed. Print it and submit it to the portfolio folder if your teacher asks for it.</p>
+      <div id="dsBody">
+        <p>No recorded case or completed item yet. Record a case in Explore mode, or finish an item in any other mode, and it will appear here.</p>
+      </div>
+      <div class="checkrow no-print">
+        <button type="button" id="printBtn">Print exploration record</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+"use strict";
+// ==GENERATOR==
+// Pure generator and checking logic for Transversal Lab. No DOM access here.
+// Every function takes an rng (a function returning a number in [0, 1)) so
+// the harness can drive generation with a seeded generator. When rng is
+// omitted, Math.random is used.
+//
+// Geometry model. Two lines, a (upper) and b (lower), are cut by a
+// transversal t. Line a has direction la (degrees, screen coordinates, y
+// pointing down). The transversal's downward direction is tv. Line b has
+// direction la + tilt; tilt 0 means the lines are parallel. At each
+// intersection the four angles sit in quadrants NE, NW, SE, SW relative to
+// the intersection (east and west are the two sides of the transversal).
+// If d = the angle between the line's east ray and the transversal's south
+// ray, reduced to (0, 180), then SE = NW = d and NE = SW = 180 - d.
+// Interior angles are the ones between the lines: SE and SW at a, NE and
+// NW at b. Every item's diagram is drawn from the same numbers the item
+// uses, including verdict items, where the drawn tilt of line b is derived
+// from the two given measures.
+
+function makeRng(seed) {
+  var a = (seed >>> 0) || 1;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    var t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function rngOr(rng) { return (typeof rng === "function") ? rng : Math.random; }
+function rPick(rng, arr) { return arr[Math.floor(rngOr(rng)() * arr.length)]; }
+function rInt(rng, min, max) { return min + Math.floor(rngOr(rng)() * (max - min + 1)); }
+function rShuffle(rng, arr) {
+  var r = rngOr(rng);
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(r() * (i + 1));
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+function norm180(x) {
+  var v = ((x % 360) + 360) % 360;
+  return v > 180 ? 360 - v : v;
+}
+function dirVec(deg) {
+  var r = deg * Math.PI / 180;
+  return [Math.cos(r), Math.sin(r)];
+}
+function quadAngle(lineDir, tvDir, quad) {
+  var d = norm180(tvDir - lineDir);
+  if (quad === "SE" || quad === "NW") return d;
+  return 180 - d;
+}
+function computeAll(la, tv, tilt) {
+  var out = { A: {}, B: {} };
+  ["NE", "NW", "SE", "SW"].forEach(function (q) {
+    out.A[q] = quadAngle(la, tv, q);
+    out.B[q] = quadAngle(la + tilt, tv, q);
+  });
+  return out;
+}
+
+var QUADS = ["NE", "NW", "SE", "SW"];
+var REL_TYPES = ["corresponding", "alternate interior", "alternate exterior", "same-side interior", "vertically opposite"];
+var REL_LABELS = {
+  "corresponding": "Corresponding angles",
+  "alternate interior": "Alternate interior angles",
+  "alternate exterior": "Alternate exterior angles",
+  "same-side interior": "Same-side interior angles",
+  "vertically opposite": "Vertically opposite angles"
+};
+function isInterior(loc, quad) {
+  if (loc === "A") return quad === "SE" || quad === "SW";
+  return quad === "NE" || quad === "NW";
+}
+function sideOf(quad) { return (quad === "NE" || quad === "SE") ? "E" : "W"; }
+function oppositeQuad(quad) {
+  return { NE: "SW", SW: "NE", NW: "SE", SE: "NW" }[quad];
+}
+function classifyPair(m1, m2) {
+  if (m1.loc === m2.loc) {
+    return oppositeQuad(m1.quad) === m2.quad ? "vertically opposite" : "adjacent";
+  }
+  if (m1.quad === m2.quad) return "corresponding";
+  var i1 = isInterior(m1.loc, m1.quad), i2 = isInterior(m2.loc, m2.quad);
+  var sameSide = sideOf(m1.quad) === sideOf(m2.quad);
+  if (i1 && i2) return sameSide ? "same-side interior" : "alternate interior";
+  if (!i1 && !i2) return sameSide ? "same-side exterior" : "alternate exterior";
+  return "mixed";
+}
+function pairForType(type, rng) {
+  var r = rngOr(rng);
+  function maybeSwap(pair) { return r() < 0.5 ? [pair[1], pair[0]] : pair; }
+  if (type === "corresponding") {
+    var q = rPick(r, QUADS);
+    return [{ loc: "A", quad: q }, { loc: "B", quad: q }];
+  }
+  if (type === "alternate interior") return maybeSwap(rPick(r, [
+    [{ loc: "A", quad: "SE" }, { loc: "B", quad: "NW" }],
+    [{ loc: "A", quad: "SW" }, { loc: "B", quad: "NE" }]
+  ]));
+  if (type === "same-side interior") return maybeSwap(rPick(r, [
+    [{ loc: "A", quad: "SE" }, { loc: "B", quad: "NE" }],
+    [{ loc: "A", quad: "SW" }, { loc: "B", quad: "NW" }]
+  ]));
+  if (type === "alternate exterior") return maybeSwap(rPick(r, [
+    [{ loc: "A", quad: "NE" }, { loc: "B", quad: "SW" }],
+    [{ loc: "A", quad: "NW" }, { loc: "B", quad: "SE" }]
+  ]));
+  // vertically opposite
+  var loc = rPick(r, ["A", "B"]);
+  var pair = rPick(r, [["NE", "SW"], ["NW", "SE"]]);
+  return maybeSwap([{ loc: loc, quad: pair[0] }, { loc: loc, quad: pair[1] }]);
+}
+function pairIsEqualType(type) { return type !== "same-side interior"; }
+function requiredPartner(type, givenValue) {
+  return pairIsEqualType(type) ? givenValue : 180 - givenValue;
+}
+function posDesc(loc, quad) {
+  var line = loc === "A" ? "a" : "b";
+  var vert = (quad === "NE" || quad === "NW") ? "above" : "below";
+  var side = (quad === "NE" || quad === "SE") ? "right" : "left";
+  return vert + " line " + line + ", on the " + side + " of the transversal";
+}
+// The given angle value g is placed at a quadrant. The crossing number d at
+// that intersection follows: quadrants SE and NW hold d itself, NE and SW
+// hold 180 - d.
+function crossingFromGiven(quad, g) {
+  return (quad === "SE" || quad === "NW") ? g : 180 - g;
+}
+function freshGivenValue(rng) {
+  var g;
+  do { g = rInt(rng, 52, 128); } while (g >= 85 && g <= 95);
+  return g;
+}
+
+var PA = [150, 95];
+function pointBForTv(tv) {
+  var shift = 145 / Math.tan(tv * Math.PI / 180);
+  return [PA[0] + shift, PA[1] + 145];
+}
+function intersectB(tv, tilt) {
+  // Transversal through PA with direction tv; line b through the untilted
+  // B point with direction tilt. Returns their intersection.
+  var pb0 = pointBForTv(tv);
+  var u = dirVec(tv), v = dirVec(tilt);
+  var dx = pb0[0] - PA[0], dy = pb0[1] - PA[1];
+  var denom = u[0] * v[1] - u[1] * v[0];
+  if (Math.abs(denom) < 1e-9) return pb0;
+  var s = (dx * v[1] - dy * v[0]) / denom;
+  return [PA[0] + s * u[0], PA[1] + s * u[1]];
+}
+
+function genNamePair(rng) {
+  var r = rngOr(rng);
+  var type = rPick(r, REL_TYPES);
+  var marks = pairForType(type, r);
+  var tv = rInt(r, 52, 128);
+  return {
+    mode: "name", type: type, marks: marks,
+    la: 0, tv: tv, tilt: 0, PB: pointBForTv(tv)
+  };
+}
+
+function genCompute(rng) {
+  var r = rngOr(rng);
+  var type = rPick(r, ["corresponding", "corresponding", "alternate interior", "alternate interior",
+    "same-side interior", "same-side interior", "alternate exterior", "vertically opposite"]);
+  var marks = pairForType(type, r);
+  var gi = rInt(r, 0, 1);
+  var given = marks[gi], target = marks[1 - gi];
+  var g = freshGivenValue(r);
+  var d = crossingFromGiven(given.quad, g);
+  var tv = d; // la = 0 at the given intersection; tilt is 0, so d is shared
+  var targetValue = quadAngle(0, tv, target.quad);
+  // Recompute the given value from the same geometry as a self-check value.
+  var givenCheck = quadAngle(0, tv, given.quad);
+  return {
+    mode: "compute", type: type, given: { loc: given.loc, quad: given.quad, value: g },
+    target: { loc: target.loc, quad: target.quad }, targetValue: targetValue,
+    givenCheck: givenCheck, la: 0, tv: tv, tilt: 0, PB: pointBForTv(tv)
+  };
+}
+
+function genVerdict(rng) {
+  var r = rngOr(rng);
+  var type = rPick(r, ["corresponding", "alternate interior", "same-side interior", "alternate exterior"]);
+  var marks = pairForType(type, r);
+  if (marks[0].loc === "B") { var tmp = marks[0]; marks[0] = marks[1]; marks[1] = tmp; }
+  var m1 = marks[0], m2 = marks[1];
+  var g1 = freshGivenValue(r);
+  var required = requiredPartner(type, g1);
+  var format = r() < 0.55 ? "verdict" : "claim";
+  var delta = rInt(r, 5, 26) * (r() < 0.5 ? -1 : 1);
+  var g2, parallel;
+  var flawKind = null, claimedType = type;
+  if (format === "verdict") {
+    parallel = r() < 0.5;
+    g2 = parallel ? required : required + delta;
+  } else {
+    flawKind = rPick(r, ["none", "relationship", "measures"]);
+    if (flawKind === "none") { parallel = true; g2 = required; }
+    else if (flawKind === "relationship") {
+      parallel = true; g2 = required;
+      var others = REL_TYPES.filter(function (t) { return t !== type && t !== "vertically opposite"; });
+      claimedType = rPick(r, others);
+    } else { parallel = false; g2 = required + delta; }
+  }
+  if (g2 < 12 || g2 > 168) { g2 = required - delta; }
+  var dA = crossingFromGiven(m1.quad, g1);
+  var dB = crossingFromGiven(m2.quad, g2);
+  var tv = dA;
+  var tilt = dA - dB;
+  var item = {
+    mode: "verdict", format: format, type: type, claimedType: claimedType, flawKind: flawKind,
+    marks: [
+      { loc: m1.loc, quad: m1.quad, value: g1 },
+      { loc: m2.loc, quad: m2.quad, value: g2 }
+    ],
+    required: required, parallel: parallel,
+    la: 0, tv: tv, tilt: tilt, PB: pointBForTv(tv)
+  };
+  if (format === "claim") {
+    var claimedLabel = REL_LABELS[claimedType].toLowerCase();
+    item.claimText = "A student writes: \"The two marked angles are " + claimedLabel +
+      ", and their measures fit that relationship, so the lines must be parallel.\"";
+    if (flawKind === "none") {
+      item.flawOptions = [
+        "Nothing is wrong: the relationship is named correctly and the measures satisfy it.",
+        "The relationship is named wrongly.",
+        "The measures do not satisfy the relationship."
+      ];
+      item.flawIndex = 0;
+    } else if (flawKind === "relationship") {
+      item.flawOptions = [
+        "The relationship is named wrongly: the marked pair is " + REL_LABELS[type].toLowerCase() +
+          ", not " + claimedLabel + ".",
+        "The measures do not satisfy the relationship the pair actually forms.",
+        "Nothing is wrong with the claim."
+      ];
+      item.flawIndex = 0;
+    } else {
+      var detail = pairIsEqualType(type)
+        ? "for parallel lines the pair would have to be equal, but " + g1 + " and " + g2 + " differ"
+        : "for parallel lines the pair would have to sum to 180 degrees, but " + g1 + " + " + g2 + " = " + (g1 + g2);
+      item.flawOptions = [
+        "The measures do not satisfy the relationship: " + detail + ".",
+        "The relationship is named wrongly.",
+        "Nothing is wrong with the claim."
+      ];
+      item.flawIndex = 0;
+    }
+  }
+  return item;
+}
+
+// ---- SVG drawing (pure string builders; the UI injects the result) ----
+
+function polar(cx, cy, r, deg) {
+  var v = dirVec(deg);
+  return [cx + r * v[0], cy + r * v[1]];
+}
+function fmtPt(p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }
+function arcPath(cx, cy, r, a1, a2) {
+  var d = ((a2 - a1) % 360 + 360) % 360;
+  var start, end;
+  if (d <= 180) { start = a1; end = a2; } else { start = a2; end = a1; }
+  var p1 = polar(cx, cy, r, start), p2 = polar(cx, cy, r, end);
+  return "M " + fmtPt(p1) + " A " + r + " " + r + " 0 0 1 " + fmtPt(p2);
+}
+function quadRays(lineDir, tvDir, quad) {
+  var E = lineDir, W = lineDir + 180, S = tvDir, N = tvDir + 180;
+  if (quad === "NE") return [E, N];
+  if (quad === "SE") return [E, S];
+  if (quad === "SW") return [W, S];
+  return [W, N];
+}
+function midAngle(lineDir, tvDir, quad) {
+  var rays = quadRays(lineDir, tvDir, quad);
+  var u = dirVec(rays[0]), v = dirVec(rays[1]);
+  return Math.atan2(u[1] + v[1], u[0] + v[0]) * 180 / Math.PI;
+}
+var MARK_COLORS = { given: "#0b5cad", target: "#c2510a", plain: "#37474f" };
+function buildTransversalSVG(cfg) {
+  var la = cfg.la, tv = cfg.tv, tilt = cfg.tilt || 0;
+  var PAx = PA, PBx = cfg.PB || pointBForTv(tv);
+  var lb = la + tilt;
+  var out = [];
+  out.push("<svg viewBox=\"0 0 360 340\" width=\"360\" height=\"340\" role=\"img\" aria-label=\"Two lines cut by a transversal\">");
+  function seg(p, q, color, w) {
+    out.push("<line x1=\"" + p[0].toFixed(1) + "\" y1=\"" + p[1].toFixed(1) + "\" x2=\"" + q[0].toFixed(1) + "\" y2=\"" + q[1].toFixed(1) + "\" stroke=\"" + color + "\" stroke-width=\"" + w + "\"/>");
+  }
+  var aDir = dirVec(la), bDir = dirVec(lb), tDir = dirVec(tv);
+  seg([PAx[0] - 172 * aDir[0], PAx[1] - 172 * aDir[1]], [PAx[0] + 172 * aDir[0], PAx[1] + 172 * aDir[1]], "#1c2430", 2);
+  seg([PBx[0] - 172 * bDir[0], PBx[1] - 172 * bDir[1]], [PBx[0] + 172 * bDir[0], PBx[1] + 172 * bDir[1]], "#1c2430", 2);
+  seg([PAx[0] - 48 * tDir[0], PAx[1] - 48 * tDir[1]], [PBx[0] + 48 * tDir[0], PBx[1] + 48 * tDir[1]], "#5a6572", 2);
+  if (tilt === 0) {
+    [PAx, PBx].forEach(function (P, idx) {
+      var d = idx === 0 ? aDir : bDir;
+      var mx = P[0] + 95 * d[0], my = P[1] + 95 * d[1];
+      var tip = [mx + 7 * d[0], my + 7 * d[1]];
+      var perp = [-d[1], d[0]];
+      var b1 = [mx + 5 * perp[0], my + 5 * perp[1]], b2 = [mx - 5 * perp[0], my - 5 * perp[1]];
+      out.push("<polygon points=\"" + fmtPt(tip) + " " + fmtPt(b1) + " " + fmtPt(b2) + "\" fill=\"#1c2430\"/>");
+    });
+  }
+  out.push("<text x=\"" + (PAx[0] - 160 * aDir[0]).toFixed(1) + "\" y=\"" + (PAx[1] - 160 * aDir[1] - 8).toFixed(1) + "\" font-size=\"15\" font-style=\"italic\" fill=\"#1c2430\">a</text>");
+  out.push("<text x=\"" + (PBx[0] - 160 * bDir[0]).toFixed(1) + "\" y=\"" + (PBx[1] - 160 * bDir[1] + 18).toFixed(1) + "\" font-size=\"15\" font-style=\"italic\" fill=\"#1c2430\">b</text>");
+  out.push("<text x=\"" + (PAx[0] - 52 * tDir[0]).toFixed(1) + "\" y=\"" + (PAx[1] - 52 * tDir[1]).toFixed(1) + "\" font-size=\"15\" font-style=\"italic\" fill=\"#5a6572\">t</text>");
+  [PAx, PBx].forEach(function (P) {
+    out.push("<circle cx=\"" + P[0].toFixed(1) + "\" cy=\"" + P[1].toFixed(1) + "\" r=\"3\" fill=\"#1c2430\"/>");
+  });
+  (cfg.marks || []).forEach(function (mk) {
+    var P = mk.loc === "A" ? PAx : PBx;
+    var lineDir = mk.loc === "A" ? la : lb;
+    var rays = quadRays(lineDir, tv, mk.quad);
+    var color = MARK_COLORS[mk.kind] || MARK_COLORS.plain;
+    out.push("<path d=\"" + arcPath(P[0], P[1], 23, rays[0], rays[1]) + "\" fill=\"none\" stroke=\"" + color + "\" stroke-width=\"3\"/>");
+    var mid = midAngle(lineDir, tv, mk.quad);
+    var lp = polar(P[0], P[1], 42, mid);
+    out.push("<text x=\"" + lp[0].toFixed(1) + "\" y=\"" + (lp[1] + 5).toFixed(1) + "\" font-size=\"14\" font-weight=\"700\" text-anchor=\"middle\" fill=\"" + color + "\">" + mk.text + "</text>");
+  });
+  if (cfg.handles) {
+    var hT = polar(PAx[0], PAx[1], 118, tv + 180);
+    var hB = polar(PBx[0], PBx[1], 118, lb);
+    out.push("<circle id=\"hTv\" cx=\"" + hT[0].toFixed(1) + "\" cy=\"" + hT[1].toFixed(1) + "\" r=\"10\" fill=\"#0b5cad\" stroke=\"#fff\" stroke-width=\"2\" style=\"cursor:grab\"/>");
+    out.push("<circle id=\"hTilt\" cx=\"" + hB[0].toFixed(1) + "\" cy=\"" + hB[1].toFixed(1) + "\" r=\"10\" fill=\"#c2510a\" stroke=\"#fff\" stroke-width=\"2\" style=\"cursor:grab\"/>");
+  }
+  out.push("</svg>");
+  return out.join("\n");
+}
+// ==END GENERATOR==
+
+// ---- UI ----
+
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+function parseNum(v) {
+  if (v === null || v === undefined) return NaN;
+  var t = String(v).trim().replace(/,/g, "");
+  if (t === "") return NaN;
+  var n = Number(t);
+  return isNaN(n) ? NaN : n;
+}
+function showFeedback(el, html, cls) { el.innerHTML = html; el.className = "feedback show " + cls; }
+function hideFeedback(el) { el.innerHTML = ""; el.className = "feedback"; }
+function checkedPick(name) {
+  var els = document.querySelectorAll("input[name='" + name + "']");
+  for (var i = 0; i < els.length; i++) if (els[i].checked) return els[i].value;
+  return null;
+}
+function renderRadioPicks(containerId, name, options) {
+  var wrap = $(containerId); wrap.innerHTML = "";
+  rShuffle(Math.random, options.slice()).forEach(function (opt) {
+    var lab = document.createElement("label");
+    lab.className = "pickopt";
+    lab.innerHTML = "<input type=\"radio\" name=\"" + name + "\" value=\"" + esc(opt.value) + "\"> " + esc(opt.text);
+    wrap.appendChild(lab);
+  });
+}
+function relOptions() {
+  return REL_TYPES.map(function (t) { return { value: t, text: REL_LABELS[t] }; });
+}
+function explainType(type) {
+  return {
+    "corresponding": "Corresponding angles sit in the same position at each intersection, and for parallel lines they are equal.",
+    "alternate interior": "Alternate interior angles sit between the lines, on opposite sides of the transversal, and for parallel lines they are equal.",
+    "alternate exterior": "Alternate exterior angles sit outside the lines, on opposite sides of the transversal, and for parallel lines they are equal.",
+    "same-side interior": "Same-side interior angles sit between the lines, on the same side of the transversal, and for parallel lines they are supplementary: they sum to 180 degrees.",
+    "vertically opposite": "Vertically opposite angles sit across from each other at a single intersection, and they are always equal."
+  }[type] || "";
+}
+
+var state = {
+  mode: "explore",
+  explore: { tv: 72, tilt: 0, lock: true },
+  cases: [],
+  generalText: "", breakText: "",
+  nameItem: null, computeItem: null, verdictItem: null,
+  done: []
+};
+
+function setMode(mode) {
+  state.mode = mode;
+  $("panelExplore").classList.toggle("hidden", mode !== "explore");
+  $("panelName").classList.toggle("hidden", mode !== "name");
+  $("panelCompute").classList.toggle("hidden", mode !== "compute");
+  $("panelVerdict").classList.toggle("hidden", mode !== "verdict");
+  [["modeExplore", "explore"], ["modeName", "name"], ["modeCompute", "compute"], ["modeVerdict", "verdict"]].forEach(function (pair) {
+    var on = pair[1] === mode;
+    $(pair[0]).setAttribute("aria-pressed", String(on));
+    $(pair[0]).classList.toggle("secondary", !on);
+  });
+}
+$("modeExplore").addEventListener("click", function () { setMode("explore"); });
+$("modeName").addEventListener("click", function () { setMode("name"); });
+$("modeCompute").addEventListener("click", function () { setMode("compute"); });
+$("modeVerdict").addEventListener("click", function () { setMode("verdict"); });
+$("printBtn").addEventListener("click", function () { window.print(); });
+
+// ---- Record ----
+
+function renderRecord() {
+  var body = $("dsBody");
+  var html = "";
+  if (state.cases.length) {
+    html += "<h3>Recorded cases (Explore)</h3><table><tr><th>Case</th><th>Transversal slant</th><th>Tilt of line b</th><th>At line a (NE, NW, SE, SW)</th><th>At line b (NE, NW, SE, SW)</th></tr>";
+    state.cases.forEach(function (c, i) {
+      html += "<tr><td>" + (i + 1) + "</td><td>" + c.tv + " degrees</td><td>" + c.tilt + " degrees</td><td>" +
+        [c.m.A.NE, c.m.A.NW, c.m.A.SE, c.m.A.SW].join(", ") + "</td><td>" +
+        [c.m.B.NE, c.m.B.NW, c.m.B.SE, c.m.B.SW].join(", ") + "</td></tr>";
+    });
+    html += "</table>";
+  }
+  if (state.generalText) html += "<h3>My generalizations, in my own words</h3><p>" + esc(state.generalText) + "</p>";
+  if (state.breakText) html += "<h3>Break it findings</h3><p>" + esc(state.breakText) + "</p>";
+  if (state.done.length) {
+    html += "<h3>Completed practice</h3><ul>";
+    state.done.forEach(function (d) { html += "<li>" + esc(d) + "</li>"; });
+    html += "</ul>";
+  }
+  if (html) body.innerHTML = html;
+}
+$("eGeneral").addEventListener("input", function () { state.generalText = this.value; renderRecord(); });
+$("eBreak").addEventListener("input", function () { state.breakText = this.value; renderRecord(); });
+
+// ---- Explore ----
+
+function exploreSVG() {
+  var ex = state.explore;
+  var PBx = intersectB(ex.tv, ex.lock ? 0 : ex.tilt);
+  return buildTransversalSVG({ la: 0, tv: ex.tv, tilt: ex.lock ? 0 : ex.tilt, PB: PBx, marks: [], handles: true });
+}
+function renderExplore() {
+  var ex = state.explore;
+  var tilt = ex.lock ? 0 : ex.tilt;
+  $("eDiagram").innerHTML = exploreSVG();
+  $("eTvVal").textContent = ex.tv + " degrees";
+  $("eTiltVal").textContent = tilt + " degrees";
+  $("eTv").value = ex.tv;
+  $("eTilt").value = ex.tilt;
+  $("eTilt").disabled = ex.lock;
+  var m = computeAll(0, ex.tv, tilt);
+  var html = "<table class=\"plan\"><tr><th></th><th>Above left (NW)</th><th>Above right (NE)</th><th>Below left (SW)</th><th>Below right (SE)</th></tr>";
+  html += "<tr><th>Line a</th><td>" + Math.round(m.A.NW) + "</td><td>" + Math.round(m.A.NE) + "</td><td>" + Math.round(m.A.SW) + "</td><td>" + Math.round(m.A.SE) + "</td></tr>";
+  html += "<tr><th>Line b</th><td>" + Math.round(m.B.NW) + "</td><td>" + Math.round(m.B.NE) + "</td><td>" + Math.round(m.B.SW) + "</td><td>" + Math.round(m.B.SE) + "</td></tr></table>";
+  $("eTable").innerHTML = html;
+  renderCompare();
+  attachDrag();
+}
+function posOptions() {
+  var opts = [];
+  ["A", "B"].forEach(function (loc) {
+    QUADS.forEach(function (q) {
+      opts.push({ value: loc + ":" + q, text: "Line " + loc.toLowerCase() + ", " + posDesc(loc, q) });
+    });
+  });
+  return opts;
+}
+function fillPosSelects() {
+  var opts = posOptions();
+  [$("ePick1"), $("ePick2")].forEach(function (sel, si) {
+    sel.innerHTML = "";
+    opts.forEach(function (o, i) {
+      var op = document.createElement("option");
+      op.value = o.value; op.textContent = o.text;
+      if ((si === 0 && i === 3) || (si === 1 && i === 6)) op.selected = true;
+      sel.appendChild(op);
+    });
+  });
+}
+function renderCompare() {
+  var ex = state.explore;
+  var tilt = ex.lock ? 0 : ex.tilt;
+  var m = computeAll(0, ex.tv, tilt);
+  function val(v) { var p = v.split(":"); return m[p[0]][p[1]]; }
+  function mark(v) { var p = v.split(":"); return { loc: p[0], quad: p[1] }; }
+  var v1 = val($("ePick1").value), v2 = val($("ePick2").value);
+  var type = classifyPair(mark($("ePick1").value), mark($("ePick2").value));
+  var rel;
+  if (Math.abs(v1 - v2) < 0.51) rel = "they are equal right now";
+  else if (Math.abs(v1 + v2 - 180) < 0.51) rel = "they are supplementary right now (they sum to 180 degrees)";
+  else rel = "they are neither equal nor supplementary right now (they differ by " + Math.abs(Math.round(v1 - v2)) + " degrees)";
+  var name = type === "adjacent" ? "adjacent angles (they share a side at one intersection)"
+    : type === "mixed" ? "not one of the named parallel-line pairs"
+    : type === "same-side exterior" ? "same-side exterior angles"
+    : REL_LABELS[type].toLowerCase();
+  $("eCompare").textContent = "This pair is " + name + ": " + Math.round(v1) + " degrees and " + Math.round(v2) + " degrees, so " + rel + ".";
+}
+$("ePick1").addEventListener("change", renderCompare);
+$("ePick2").addEventListener("change", renderCompare);
+$("eLock").addEventListener("change", function () { state.explore.lock = this.checked; renderExplore(); });
+$("eTv").addEventListener("input", function () { state.explore.tv = parseInt(this.value, 10); renderExplore(); });
+$("eTilt").addEventListener("input", function () { state.explore.tilt = parseInt(this.value, 10); renderExplore(); });
+$("eRecord").addEventListener("click", function () {
+  var ex = state.explore;
+  var tilt = ex.lock ? 0 : ex.tilt;
+  state.cases.push({ tv: ex.tv, tilt: tilt, m: computeAll(0, ex.tv, tilt) });
+  renderRecord();
+});
+function svgPoint(evt, svg) {
+  var pt = new DOMPoint(evt.clientX, evt.clientY);
+  var m = svg.getScreenCTM();
+  if (!m) return null;
+  var p = pt.matrixTransform(m.inverse());
+  return [p.x, p.y];
+}
+function attachDrag() {
+  var svg = $("eDiagram").querySelector("svg");
+  if (!svg) return;
+  [["hTv", "tv"], ["hTilt", "tilt"]].forEach(function (pair) {
+    var h = svg.querySelector("#" + pair[0]);
+    if (!h) return;
+    h.addEventListener("pointerdown", function (evt) {
+      evt.preventDefault();
+      h.setPointerCapture(evt.pointerId);
+      function move(ev) {
+        var p = svgPoint(ev, svg);
+        if (!p) return;
+        var ex = state.explore;
+        if (pair[1] === "tv") {
+          var ang = Math.atan2(p[1] - PA[1], p[0] - PA[0]) * 180 / Math.PI;
+          var tv = ((ang - 180) % 360 + 360) % 360;
+          if (tv > 52 && tv < 128) { ex.tv = Math.round(tv); renderExplore(); }
+        } else {
+          if (ex.lock) return;
+          var PBx = intersectB(ex.tv, ex.tilt);
+          var lb = Math.atan2(p[1] - PBx[1], p[0] - PBx[0]) * 180 / Math.PI;
+          if (lb > 180) lb -= 360;
+          if (lb >= -24 && lb <= 24) { ex.tilt = Math.round(lb); renderExplore(); }
+        }
+      }
+      function up() {
+        h.removeEventListener("pointermove", move);
+        h.removeEventListener("pointerup", up);
+      }
+      h.addEventListener("pointermove", move);
+      h.addEventListener("pointerup", up);
+    });
+  });
+}
+
+// ---- Name the Pair ----
+
+function newNameItem() {
+  state.nameItem = genNamePair(Math.random);
+  var it = state.nameItem;
+  $("nDiagram").innerHTML = buildTransversalSVG({
+    la: it.la, tv: it.tv, tilt: it.tilt, PB: it.PB,
+    marks: [
+      { loc: it.marks[0].loc, quad: it.marks[0].quad, text: "1", kind: "given" },
+      { loc: it.marks[1].loc, quad: it.marks[1].quad, text: "2", kind: "target" }
+    ]
+  });
+  renderRadioPicks("nPicks", "nRel", relOptions());
+  hideFeedback($("nFeedback"));
+}
+$("nNew").addEventListener("click", newNameItem);
+$("nCheck").addEventListener("click", function () {
+  var it = state.nameItem, fb = $("nFeedback");
+  var pick = checkedPick("nRel");
+  if (!pick) { showFeedback(fb, "<p class=\"sumline\">Choose a relationship first.</p>", "info"); return; }
+  if (pick === it.type) {
+    showFeedback(fb, "<p class=\"sumline\">Correct.</p><p>" + esc(explainType(it.type)) + "</p>", "ok");
+    state.done.push("Name the Pair: " + REL_LABELS[it.type].toLowerCase() + " identified.");
+    renderRecord();
+  } else {
+    showFeedback(fb, "<p class=\"sumline\">Not that pair.</p><p>The marked pair is " + esc(REL_LABELS[it.type].toLowerCase()) + ". " + esc(explainType(it.type)) + " Check the positions: angle 1 is " + esc(posDesc(it.marks[0].loc, it.marks[0].quad)) + ", and angle 2 is " + esc(posDesc(it.marks[1].loc, it.marks[1].quad)) + ".</p>", "bad");
+  }
+});
+
+// ---- Compute with a Reason ----
+
+function newComputeItem() {
+  state.computeItem = genCompute(Math.random);
+  var it = state.computeItem;
+  $("cDiagram").innerHTML = buildTransversalSVG({
+    la: it.la, tv: it.tv, tilt: it.tilt, PB: it.PB,
+    marks: [
+      { loc: it.given.loc, quad: it.given.quad, text: it.given.value + "°", kind: "given" },
+      { loc: it.target.loc, quad: it.target.quad, text: "x", kind: "target" }
+    ]
+  });
+  $("cPrompt").textContent = "The angle " + posDesc(it.given.loc, it.given.quad) + " measures " + it.given.value +
+    " degrees. Find the angle " + posDesc(it.target.loc, it.target.quad) + ", marked x.";
+  $("cValue").value = "";
+  renderRadioPicks("cPicks", "cRel", relOptions());
+  hideFeedback($("cFeedback"));
+}
+$("cNew").addEventListener("click", newComputeItem);
+$("cCheck").addEventListener("click", function () {
+  var it = state.computeItem, fb = $("cFeedback");
+  var v = parseNum($("cValue").value);
+  var pick = checkedPick("cRel");
+  if (isNaN(v)) { showFeedback(fb, "<p class=\"sumline\">Enter a measure first.</p>", "info"); return; }
+  if (!pick) { showFeedback(fb, "<p class=\"sumline\">Choose the relationship that earns the measure.</p><p>A measure with no reason attached is not finished work in this unit.</p>", "info"); return; }
+  var valOk = Math.abs(v - it.targetValue) < 0.51;
+  var relOk = pick === it.type;
+  if (valOk && relOk) {
+    showFeedback(fb, "<p class=\"sumline\">Correct: x = " + it.targetValue + " degrees.</p><p>" + esc(explainType(it.type)) + "</p>", "ok");
+    state.done.push("Compute with a Reason: " + it.targetValue + " degrees by " + REL_LABELS[it.type].toLowerCase() + ".");
+    renderRecord();
+  } else if (!valOk && relOk) {
+    var hint = pairIsEqualType(it.type)
+      ? "This pair is equal for parallel lines, so x should match the given " + it.given.value + " degrees exactly."
+      : "This pair is supplementary for parallel lines, so x should be 180 minus the given " + it.given.value + " degrees.";
+    showFeedback(fb, "<p class=\"sumline\">The relationship is right; the measure is not.</p><p>" + esc(hint) + "</p>", "bad");
+  } else if (valOk && !relOk) {
+    showFeedback(fb, "<p class=\"sumline\">The measure is right; the reason is not.</p><p>The pair is " + esc(REL_LABELS[it.type].toLowerCase()) + ", not " + esc(REL_LABELS[pick].toLowerCase()) + ". " + esc(explainType(it.type)) + " In this unit the justification is part of the answer.</p>", "bad");
+  } else {
+    showFeedback(fb, "<p class=\"sumline\">Neither matches yet.</p><p>Look at the positions first: the given angle is " + esc(posDesc(it.given.loc, it.given.quad)) + " and x is " + esc(posDesc(it.target.loc, it.target.quad)) + ". Name that pair, then use what parallel lines promise that pair.</p>", "bad");
+  }
+});
+
+// ---- Parallel or Not? ----
+
+function newVerdictItem() {
+  state.verdictItem = genVerdict(Math.random);
+  var it = state.verdictItem;
+  $("vDiagram").innerHTML = buildTransversalSVG({
+    la: it.la, tv: it.tv, tilt: it.tilt, PB: it.PB,
+    marks: [
+      { loc: it.marks[0].loc, quad: it.marks[0].quad, text: it.marks[0].value + "°", kind: "given" },
+      { loc: it.marks[1].loc, quad: it.marks[1].quad, text: it.marks[1].value + "°", kind: "target" }
+    ]
+  });
+  if (it.format === "verdict") {
+    $("vPrompt").textContent = "One marked angle measures " + it.marks[0].value + " degrees (" + posDesc(it.marks[0].loc, it.marks[0].quad) +
+      ") and the other measures " + it.marks[1].value + " degrees (" + posDesc(it.marks[1].loc, it.marks[1].quad) + "). What do the measures prove?";
+    $("vLegend").textContent = "What do the measures prove?";
+    renderRadioPicks("vPicks", "vMain", [
+      { value: "parallel", text: "The lines must be parallel" },
+      { value: "not", text: "The lines cannot be parallel" }
+    ]);
+    $("vRelFieldset").classList.remove("hidden");
+    renderRadioPicks("vRelPicks", "vRel", relOptions().filter(function (o) { return o.value !== "vertically opposite"; }));
+  } else {
+    $("vPrompt").textContent = it.claimText + " The marked angles measure " + it.marks[0].value + " degrees (" +
+      posDesc(it.marks[0].loc, it.marks[0].quad) + ") and " + it.marks[1].value + " degrees (" +
+      posDesc(it.marks[1].loc, it.marks[1].quad) + ").";
+    $("vLegend").textContent = "What is wrong with the claim?";
+    renderRadioPicks("vPicks", "vMain", it.flawOptions.map(function (t, i) { return { value: String(i), text: t }; }));
+    $("vRelFieldset").classList.add("hidden");
+  }
+  hideFeedback($("vFeedback"));
+}
+$("vNew").addEventListener("click", newVerdictItem);
+$("vCheck").addEventListener("click", function () {
+  var it = state.verdictItem, fb = $("vFeedback");
+  var pick = checkedPick("vMain");
+  if (!pick) { showFeedback(fb, "<p class=\"sumline\">Make a choice first.</p>", "info"); return; }
+  if (it.format === "verdict") {
+    var rel = checkedPick("vRel");
+    if (!rel) { showFeedback(fb, "<p class=\"sumline\">Choose the relationship that decides it.</p>", "info"); return; }
+    var verdictOk = (pick === "parallel") === it.parallel;
+    var relOk = rel === it.type;
+    var need = "For the lines to be parallel, the second angle would have to measure " + it.required + " degrees, because " +
+      REL_LABELS[it.type].toLowerCase() + (pairIsEqualType(it.type) ? " are equal for parallel lines." : " sum to 180 degrees for parallel lines.");
+    if (verdictOk && relOk) {
+      showFeedback(fb, "<p class=\"sumline\">Correct.</p><p>" + esc(need) + " It measures " + it.marks[1].value + " degrees.</p>", "ok");
+      state.done.push("Parallel or Not?: " + (it.parallel ? "parallel" : "not parallel") + " established by " + REL_LABELS[it.type].toLowerCase() + ".");
+      renderRecord();
+    } else if (!relOk) {
+      showFeedback(fb, "<p class=\"sumline\">The deciding relationship is misnamed.</p><p>The marked pair is " + esc(REL_LABELS[it.type].toLowerCase()) + ": " + esc(explainType(it.type)) + "</p>", "bad");
+    } else {
+      showFeedback(fb, "<p class=\"sumline\">The relationship is right; the verdict is not.</p><p>" + esc(need) + " It measures " + it.marks[1].value + " degrees, so the lines " + (it.parallel ? "must be parallel." : "cannot be parallel: the property fails, and with it the parallel conclusion (indicator 5.2).") + "</p>", "bad");
+    }
+  } else {
+    if (parseInt(pick, 10) === it.flawIndex) {
+      var why = it.flawKind === "none"
+        ? "The pair really is " + REL_LABELS[it.type].toLowerCase() + ", and the measures satisfy that relationship, so the conclusion follows."
+        : it.flawKind === "relationship"
+          ? "The measures do satisfy the pair's real relationship (" + REL_LABELS[it.type].toLowerCase() + "), but a claim that names the wrong relationship has not justified anything: the name is the justification."
+          : "The pair is named correctly, but the measures fail the relationship, so the parallel conclusion does not follow. A relationship only certifies parallel lines when the measures actually satisfy it.";
+      showFeedback(fb, "<p class=\"sumline\">Correct.</p><p>" + esc(why) + "</p>", "ok");
+      state.done.push("Parallel or Not?: flawed claim caught (" + it.flawKind + ").");
+      renderRecord();
+    } else {
+      showFeedback(fb, "<p class=\"sumline\">Not the flaw.</p><p>Check two things separately: do the positions match the named relationship, and do the numbers satisfy it? One of those checks is where this claim breaks (or neither, if the claim is sound).</p>", "bad");
+    }
+  }
+});
+
+fillPosSelects();
+renderExplore();
+newNameItem();
+newComputeItem();
+newVerdictItem();
+</script>
+</body>
+</html>
